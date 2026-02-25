@@ -1,0 +1,94 @@
+/* ─── Color Palette ──────────────────────────────────────────────────────────── */
+
+:root {
+  /* Background */
+  --color-bg:               #121212;
+  --color-bg-secondary:     #1e1e1e;
+  --color-bg-tertiary:      #2a2a2a;
+
+  /* Text */
+  --color-text:             #f0f0f0;
+  --color-text-muted:       #aaaaaa;
+  --color-text-subtle:      #666666;
+
+  /* Border */
+  --color-border:           #444444;
+  --color-border-light:     #555555;
+
+  /* Accent */
+  --color-accent:           #4a90d9;
+  --color-accent-hover:     #357abd;
+  --color-accent-subtle:    rgba(74, 144, 217, 0.15);
+
+  /* Board Colors */
+  --color-square-light:     #f0d9b5;
+  --color-square-dark:      #b58863;
+  --color-square-selected:  #f6f669;
+  --color-square-valid:     rgba(0, 0, 0, 0.2);
+  --color-square-check:     #e03030;
+
+  /* Status Colors */
+  --color-success:          #4caf50;
+  --color-warning:          #e07b00;
+  --color-danger:           #e03030;
+  --color-draw:             #888888;
+
+  /* Timer Colors */
+  --color-timer-bg:         #2a2a2a;
+  --color-timer-active:     #f6f669;
+  --color-timer-low:        #e07b00;
+  --color-timer-danger:     #e03030;
+  --color-timer-text:       #f0f0f0;
+
+  /* Piece Colors */
+  --color-piece-white:      #ffffff;
+  --color-piece-black:      #1a1a1a;
+
+  /* Modal */
+  --color-modal-overlay:    rgba(0, 0, 0, 0.75);
+  --color-modal-bg:         #1e1e1e;
+  --color-modal-border:     #444444;
+
+  /* Shadows */
+  --shadow-sm:              0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md:              0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg:              0 8px 32px rgba(0, 0, 0, 0.6);
+
+  /* Border Radius */
+  --radius-sm:              4px;
+  --radius-md:              8px;
+  --radius-lg:              12px;
+  --radius-full:            9999px;
+
+  /* Spacing */
+  --space-xs:               0.25rem;
+  --space-sm:               0.5rem;
+  --space-md:               1rem;
+  --space-lg:               1.5rem;
+  --space-xl:               2rem;
+  --space-2xl:              3rem;
+
+  /* Font Sizes */
+  --font-xs:                0.7rem;
+  --font-sm:                0.8rem;
+  --font-md:                0.95rem;
+  --font-lg:                1.1rem;
+  --font-xl:                1.4rem;
+  --font-2xl:               1.8rem;
+
+  /* Font Weights */
+  --font-normal:            400;
+  --font-semibold:          600;
+  --font-bold:              700;
+
+  /* Transitions */
+  --transition-fast:        0.1s ease;
+  --transition-base:        0.2s ease;
+  --transition-slow:        0.3s ease;
+
+  /* Z-index layers */
+  --z-board:                1;
+  --z-piece:                2;
+  --z-navbar:               50;
+  --z-modal:                100;
+}
