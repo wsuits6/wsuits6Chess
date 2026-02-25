@@ -1,0 +1,111 @@
+/* Board Container */
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(80vw, 80vh, 600px);
+  height: min(80vw, 80vh, 600px);
+  border: 3px solid #2c2c2c;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+/* Square Base */
+.square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+/* Square Colors */
+.square--light {
+  background-color: #f0d9b5;
+}
+
+.square--dark {
+  background-color: #b58863;
+}
+
+/* Selected Square */
+.square--selected {
+  background-color: #f6f669 !important;
+  opacity: 0.85;
+}
+
+/* Valid Move Highlight */
+.square--valid-move.square--light,
+.square--valid-move.square--dark {
+  background-color: inherit;
+}
+
+/* Valid Move Dot (empty square) */
+.square__valid-dot {
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Valid Capture Ring (occupied square) */
+.square__valid-capture {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Rank Labels (1–8) */
+.square__rank-label {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.square--light .square__rank-label {
+  color: #b58863;
+}
+
+.square--dark .square__rank-label {
+  color: #f0d9b5;
+}
+
+/* File Labels (a–h) */
+.square__file-label {
+  position: absolute;
+  bottom: 2px;
+  right: 3px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.square--light .square__file-label {
+  color: #b58863;
+}
+
+.square--dark .square__file-label {
+  color: #f0d9b5;
+}
+
+/* Hover Effect */
+.square:hover {
+  filter: brightness(1.1);
+}
