@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useGameContext } from "../context/GameContext";
-import {
+import type {
   Position,
   PieceColor,
   PieceType,

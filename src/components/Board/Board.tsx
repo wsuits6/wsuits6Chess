@@ -2,7 +2,7 @@ import React from "react";
 import "./Board.css";
 import Square from "./Square";
 import { useGameContext } from "../../context/GameContext";
-import { BoardState, Position } from "../../utils/chessLogic";
+import type { BoardState, Position } from "../../utils/chessLogic";
 
 const Board: React.FC = () => {
   const { boardState, selectedSquare, selectSquare, validMoves } = useGameContext();

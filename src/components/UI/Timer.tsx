@@ -1,5 +1,5 @@
 import React from "react";
-import { PieceColor } from "../../utils/chessLogic";
+import type { PieceColor } from "../../utils/chessLogic";
 import { useTimer } from "../../hooks/useTimer";
 import { useGameContext } from "../../context/GameContext";
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useGameContext } from "../context/GameContext";
-import { PieceColor } from "../utils/chessLogic";
+import type { PieceColor } from "../utils/chessLogic";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

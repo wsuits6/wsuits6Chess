@@ -1,13 +1,5 @@
-import {
-  BoardState,
-  ChessPiece,
-  PieceColor,
-  Position,
-  getLegalMoves,
-  applyMove,
-  getGameStatus,
-  positionsEqual,
-} from "./chessLogic";
+import { applyMove, getGameStatus, getLegalMoves, positionsEqual } from "./chessLogic";
+import type { BoardState, ChessPiece, PieceColor, Position } from "./chessLogic";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 import React from "react";
 import "./Board.css";
 import Piece from "../Pieces/Piece";
-import { Position, ChessPiece } from "../../utils/chessLogic";
+import type { Position, ChessPiece } from "../../utils/chessLogic";
 
 interface SquareProps {
   position: Position;

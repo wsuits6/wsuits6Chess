@@ -1,6 +1,6 @@
 import React from "react";
 import { useGameLogic } from "../../hooks/useGameLogic";
-import { ChessPiece, PieceColor } from "../../utils/chessLogic";
+import type { ChessPiece, PieceColor } from "../../utils/chessLogic";
 
 // ─── Piece Symbol Helper ──────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import React from "react";
 import "./Pieces.css";
-import { ChessPiece } from "../../utils/chessLogic";
+import type { ChessPiece } from "../../utils/chessLogic";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 

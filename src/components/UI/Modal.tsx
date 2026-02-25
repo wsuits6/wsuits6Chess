@@ -1,5 +1,5 @@
 import React from "react";
-import { PieceType, PieceColor } from "../../utils/chessLogic";
+import type { PieceType, PieceColor } from "../../utils/chessLogic";
 import { useGameContext } from "../../context/GameContext";
 
 // ─── Promotion Piece Options ──────────────────────────────────────────────────
