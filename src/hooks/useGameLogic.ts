@@ -1,34 +1,48 @@
 import { useCallback } from "react";
 import { useGameContext } from "../context/GameContext";
 import {
-  BoardState,
-  ChessPiece,
+  Position,
   PieceColor,
   PieceType,
-  Position,
-  getLegalMoves,
-  isInCheck,
+  BoardState,
+  ChessPiece,
 } from "../utils/chessLogic";
-import {
-  getAllLegalMoves,
-  isMovePromotion,
-  isMovecastling,
-} from "../utils/moveValidator";
 
-// ─── Piece Values for Simple Evaluation ──────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const PIECE_VALUES: Record<PieceType, number> = {
-  pawn: 1,
-  knight: 3,
-  bishop: 3,
-  rook: 5,
-  queen: 9,
-  king: 0,
-};
+export interface GameLogic {
+  // Board interaction
+  handleSquareClick: (position: Position) => void;
+  handlePromotion: (pieceType: PieceType) => void;
+  handleReset: () => void;
+  handleTimeout: (color: PieceColor) => void;
+
+  // Derived state
+  boardState: BoardState;
+  currentTurn: PieceColor;
+  selectedSquare: Position | null;
+  validMoves: Position[];
+  isCheck: boolean;
+  isCheckmate: boolean;
+  isStalemate: boolean;
+  isGameOver: boolean;
+  winner: PieceColor | null;
+  capturedPieces: { white: ChessPiece[]; black: ChessPiece[] };
+  promotionPending: { position: Position; color: PieceColor } | null;
+  moveHistory: string[];
+  whiteTime: number;
+  blackTime: number;
+
+  // Helpers
+  isSquareSelected: (position: Position) => boolean;
+  isSquareValidMove: (position: Position) => boolean;
+  isSquareInCheck: (position: Position) => boolean;
+  getStatusMessage: () => string;
+}
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export const useGameLogic = () => {
+export const useGameLogic = (): GameLogic => {
   const {
     boardState,
     currentTurn,
@@ -37,159 +51,101 @@ export const useGameLogic = () => {
     isCheck,
     isCheckmate,
     isStalemate,
-    enPassantTarget,
+    isGameOver,
+    winner,
     capturedPieces,
     promotionPending,
     moveHistory,
-    isGameOver,
-    winner,
+    whiteTime,
+    blackTime,
     selectSquare,
     promotePawn,
     resetGame,
     handleTimeout,
   } = useGameContext();
 
-  // ── Check if a position is currently selected ────────────────────────────────
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
-  const isSelected = useCallback(
-    (pos: Position): boolean => {
+  const handleSquareClick = useCallback(
+    (position: Position) => {
+      selectSquare(position);
+    },
+    [selectSquare]
+  );
+
+  const handlePromotion = useCallback(
+    (pieceType: PieceType) => {
+      promotePawn(pieceType);
+    },
+    [promotePawn]
+  );
+
+  const handleReset = useCallback(() => {
+    resetGame();
+  }, [resetGame]);
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+
+  const isSquareSelected = useCallback(
+    (position: Position): boolean => {
       return (
         selectedSquare !== null &&
-        selectedSquare.row === pos.row &&
-        selectedSquare.col === pos.col
+        selectedSquare.row === position.row &&
+        selectedSquare.col === position.col
       );
     },
     [selectedSquare]
   );
 
-  // ── Check if a position is a valid move destination ──────────────────────────
-
-  const isValidDestination = useCallback(
-    (pos: Position): boolean => {
-      return validMoves.some((m) => m.row === pos.row && m.col === pos.col);
+  const isSquareValidMove = useCallback(
+    (position: Position): boolean => {
+      return validMoves.some(
+        (m) => m.row === position.row && m.col === position.col
+      );
     },
     [validMoves]
   );
 
-  // ── Check if a piece belongs to current player ───────────────────────────────
-
-  const isCurrentPlayerPiece = useCallback(
-    (piece: ChessPiece | null): boolean => {
-      return piece !== null && piece.color === currentTurn;
+  const isSquareInCheck = useCallback(
+    (position: Position): boolean => {
+      if (!isCheck) return false;
+      const piece = boardState[position.row][position.col];
+      return (
+        piece !== null &&
+        piece.type === "king" &&
+        piece.color === currentTurn
+      );
     },
-    [currentTurn]
+    [isCheck, boardState, currentTurn]
   );
-
-  // ── Get legal moves for any position ─────────────────────────────────────────
-
-  const getMovesForPosition = useCallback(
-    (pos: Position): Position[] => {
-      return getLegalMoves(boardState, pos, enPassantTarget);
-    },
-    [boardState, enPassantTarget]
-  );
-
-  // ── Calculate material advantage ─────────────────────────────────────────────
-
-  const getMaterialAdvantage = useCallback((): {
-    white: number;
-    black: number;
-    advantage: PieceColor | "equal";
-    diff: number;
-  } => {
-    let whiteScore = 0;
-    let blackScore = 0;
-
-    for (const piece of capturedPieces.black) {
-      whiteScore += PIECE_VALUES[piece.type];
-    }
-    for (const piece of capturedPieces.white) {
-      blackScore += PIECE_VALUES[piece.type];
-    }
-
-    const diff = whiteScore - blackScore;
-    const advantage: PieceColor | "equal" =
-      diff > 0 ? "white" : diff < 0 ? "black" : "equal";
-
-    return { white: whiteScore, black: blackScore, advantage, diff: Math.abs(diff) };
-  }, [capturedPieces]);
-
-  // ── Check if a specific king is in check ─────────────────────────────────────
-
-  const isKingInCheck = useCallback(
-    (color: PieceColor): boolean => {
-      return isInCheck(boardState, color);
-    },
-    [boardState]
-  );
-
-  // ── Get all legal moves for current player ────────────────────────────────────
-
-  const getAllMovesForCurrentPlayer = useCallback((): {
-    from: Position;
-    to: Position;
-  }[] => {
-    return getAllLegalMoves(boardState, currentTurn, enPassantTarget);
-  }, [boardState, currentTurn, enPassantTarget]);
-
-  // ── Check if move is a promotion ─────────────────────────────────────────────
-
-  const checkIsPromotion = useCallback(
-    (from: Position, to: Position): boolean => {
-      return isMovePromotion(boardState, from, to);
-    },
-    [boardState]
-  );
-
-  // ── Check if move is castling ─────────────────────────────────────────────────
-
-  const checkIsCastling = useCallback(
-    (from: Position, to: Position): boolean => {
-      return isMovecastling(boardState, from, to);
-    },
-    [boardState]
-  );
-
-  // ── Get game status message ───────────────────────────────────────────────────
 
   const getStatusMessage = useCallback((): string => {
     if (isCheckmate) {
-      const loser = currentTurn;
-      const winnerColor = loser === "white" ? "Black" : "White";
-      return `Checkmate! ${winnerColor} wins!`;
+      const winnerName = winner === "white" ? "White" : "Black";
+      return `Checkmate! ${winnerName} wins!`;
     }
-    if (isStalemate) return "Stalemate! It's a draw.";
-    if (winner) {
-      const winnerLabel = winner === "white" ? "White" : "Black";
-      return `${winnerLabel} wins on time!`;
+    if (isStalemate) {
+      return "Stalemate! It's a draw.";
     }
-    if (isGameOver) return "Game over!";
-    if (isCheck) return `${currentTurn === "white" ? "White" : "Black"} is in check!`;
-    return `${currentTurn === "white" ? "White" : "Black"}'s turn`;
-  }, [isCheck, isCheckmate, isStalemate, isGameOver, winner, currentTurn]);
-
-  // ── Count pieces on board ─────────────────────────────────────────────────────
-
-  const getPieceCounts = useCallback((): Record<PieceColor, Record<PieceType, number>> => {
-    const counts: Record<PieceColor, Record<PieceType, number>> = {
-      white: { pawn: 0, knight: 0, bishop: 0, rook: 0, queen: 0, king: 0 },
-      black: { pawn: 0, knight: 0, bishop: 0, rook: 0, queen: 0, king: 0 },
-    };
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const piece = boardState[r][c];
-        if (piece) {
-          counts[piece.color][piece.type]++;
-        }
-      }
+    if (isGameOver && winner) {
+      const winnerName = winner === "white" ? "White" : "Black";
+      return `${winnerName} wins on time!`;
     }
-    return counts;
-  }, [boardState]);
+    if (isCheck) {
+      const turnName = currentTurn === "white" ? "White" : "Black";
+      return `${turnName} is in check!`;
+    }
+    const turnName = currentTurn === "white" ? "White" : "Black";
+    return `${turnName}'s turn`;
+  }, [isCheckmate, isStalemate, isGameOver, isCheck, currentTurn, winner]);
 
   // ─── Return ───────────────────────────────────────────────────────────────────
 
   return {
-    // State
+    handleSquareClick,
+    handlePromotion,
+    handleReset,
+    handleTimeout,
     boardState,
     currentTurn,
     selectedSquare,
@@ -197,30 +153,16 @@ export const useGameLogic = () => {
     isCheck,
     isCheckmate,
     isStalemate,
-    enPassantTarget,
+    isGameOver,
+    winner,
     capturedPieces,
     promotionPending,
     moveHistory,
-    isGameOver,
-    winner,
-
-    // Actions
-    selectSquare,
-    promotePawn,
-    resetGame,
-    handleTimeout,
-
-    // Computed
-    isSelected,
-    isValidDestination,
-    isCurrentPlayerPiece,
-    getMovesForPosition,
-    getMaterialAdvantage,
-    isKingInCheck,
-    getAllMovesForCurrentPlayer,
-    checkIsPromotion,
-    checkIsCastling,
+    whiteTime,
+    blackTime,
+    isSquareSelected,
+    isSquareValidMove,
+    isSquareInCheck,
     getStatusMessage,
-    getPieceCounts,
   };
 };
